@@ -262,7 +262,8 @@
      nome      -> nome do item
      preco     -> número, ex: 45  (sem "R$")
      categoria -> uma destas: "Feminino", "Masculino", "Infantil",
-                  "Brinquedos", "Casa", "Eletrônicos"
+                  "Brinquedos", "Casa", "Eletrônicos", "Livros", "Doação"
+                  (para doações, deixe preco:0 que o site mostra "Grátis")
      marca     -> opcional, ex: "Farm", "Nike" (deixe "" se não tiver)
      tamanho   -> opcional, ex: "M", "42", "2 anos" (deixe "" se não tiver)
      condicao  -> ex: "Novo", "Seminovo", "Usado - bom estado"
@@ -277,7 +278,7 @@
 const WHATSAPP = "5513996746283";   // 👈 seu número
 
 const PRODUTOS = [
-  { nome:"Conjuntinho florido Farm (croped + saia mid)", marca:"Farm", preco:200, categoria:"Feminino", tamanho:"M", condicao:"Seminovo", vendido:true, fotos:["Fotos/01.png","Fotos/01_2.png"] },
+  { nome:"Conjuntinho florido Farm (croped + saia mid)", marca:"Farm", preco:200, categoria:"Feminino", tamanho:"M", condicao:"Seminovo", fotos:["Fotos/01.png","Fotos/01_2.png"] },
   { nome:"Vestido florido longo", marca:"", preco:100, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/02_1.png","Fotos/02_2.png"] },
   { nome:"Macaquinho azul Farm", marca:"Farm", preco:50, categoria:"Feminino", tamanho:"P", condicao:"Seminovo", fotos:["Fotos/03_1.png"] },
   { nome:"Vestido verde musgo estampado", marca:"", preco:40, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/04_1.png","Fotos/04_2.png"] },
@@ -293,11 +294,20 @@ const PRODUTOS = [
   { nome:"Top paetês preto", marca:"L'etage", preco:50, categoria:"Feminino", tamanho:"P", condicao:"Seminovo", fotos:["Fotos/14_1.png","Fotos/14_2.png"] },
   { nome:"Celular Redmi", marca:"Xiaomi", preco:650, categoria:"Eletrônicos", tamanho:"", condicao:"Seminovo", obs:"Sem marcas de uso / sem carregador", fotos:["Fotos/15_1.png","Fotos/15_2.png","Fotos/15_3.png"] },
   { nome:"Aparador", marca:"", preco:100, categoria:"Casa", tamanho:"", condicao:"Usado - com marcas de uso", obs:"Sem os puxadores", fotos:["Fotos/16_1.png"] },
+  { nome:"Mochila", marca:"", preco:0, categoria:"Doação", tamanho:"", condicao:"Usado - com marcas de uso", obs:"O zíper está estragado, mas a mochila é muito boa", fotos:["Fotos/17_1.jpeg","Fotos/17_2.jpeg"] },
+  { nome:"Bolsa colombiana", marca:"", preco:70, categoria:"Feminino", tamanho:"", condicao:"Usado - bom estado", fotos:["Fotos/18_1.jpeg"] },
+  { nome:"Livros de passatempos", marca:"", preco:0, categoria:"Doação", tamanho:"", condicao:"Usado - bom estado", fotos:["Fotos/19_1.jpeg","Fotos/19_2.jpeg"] },
+  { nome:"Blusa branca de babados", marca:"", preco:0, categoria:"Doação", tamanho:"G", condicao:"Usado - bom estado", fotos:["Fotos/20_1.jpeg"] },
+  { nome:"Não se esqueça", marca:"Mario Sergio Cortella", preco:20, categoria:"Livros", tamanho:"", condicao:"Novo", fotos:["Fotos/21_1.jpeg"] },
+  { nome:"A casa da Madrinha (infantil)", marca:"Lygia Bojunga", preco:20, categoria:"Livros", tamanho:"", condicao:"Novo", fotos:["Fotos/22_1.jpeg"] },
+  { nome:"Igualdade", marca:"Thomas Piketty, Michael Sandel", preco:20, categoria:"Livros", tamanho:"", condicao:"Novo", fotos:["Fotos/23_1.jpeg"] },
+  { nome:"O que nos faz bons ou maus", marca:"Paul Bloom", preco:20, categoria:"Livros", tamanho:"", condicao:"Novo", fotos:["Fotos/24_1.jpeg"] },
+  { nome:"O velho e o mar", marca:"Ernest Hemingway", preco:20, categoria:"Livros", tamanho:"", condicao:"Novo", fotos:["Fotos/25.jpeg"] },
 ];
 
 /* ====== Daqui para baixo não precisa mexer ====== */
 
-const CATEGORIAS = ["Todos","Feminino","Masculino","Infantil","Brinquedos","Casa","Eletrônicos"];
+const CATEGORIAS = ["Todos","Feminino","Masculino","Infantil","Brinquedos","Casa","Eletrônicos","Livros","Doação"];
 let filtroAtivo = "Todos";
 let busca = "";
 PRODUTOS.forEach((p,i)=>p.id=i);   // identifica cada produto
@@ -317,6 +327,7 @@ CATEGORIAS.forEach(cat=>{
 document.getElementById("search").addEventListener("input",e=>{busca=e.target.value.toLowerCase();render();});
 
 function moeda(v){return "R$ "+Number(v).toFixed(2).replace(".",",");}
+function precoTxt(p){return (Number(p.preco)===0 || p.categoria==="Doação") ? "Grátis" : moeda(p.preco);}
 
 function linkWhats(p){
   const txt=encodeURIComponent(`Olá! Tenho interesse no item: ${p.nome} (${moeda(p.preco)})${p.tamanho?` - tam ${p.tamanho}`:""}. Ainda está disponível?`);
@@ -364,7 +375,7 @@ function render(){
         ${p.marca?`<div class="marca">${p.marca}</div>`:""}
         <div class="meta">${p.tamanho?`Tam: ${p.tamanho} • `:""}${p.condicao}</div>
         ${p.obs?`<div class="obs">${p.obs}</div>`:""}
-        <div class="price">${moeda(p.preco)}</div>
+        <div class="price">${precoTxt(p)}</div>
         ${botao}
       </div>`;
     grid.appendChild(card);
@@ -473,13 +484,13 @@ function renderCart(){
     box.innerHTML=itens.map(p=>`
       <div class="cart-row">
         <div class="info">${p.nome}<small>${p.categoria}${p.tamanho?` • tam ${p.tamanho}`:""}</small></div>
-        <div class="right">${moeda(p.preco)} <button class="rm" onclick="toggleItem(${p.id})">remover</button></div>
+        <div class="right">${precoTxt(p)} <button class="rm" onclick="toggleItem(${p.id})">remover</button></div>
       </div>`).join("");
   }
 
   // monta a mensagem do WhatsApp com o pedido completo
   let msg="Olá! Gostaria destes itens do Desapegos Casa Família:\n\n";
-  itens.forEach((p,n)=>{msg+=`${n+1}. ${p.nome}${p.marca?` - ${p.marca}`:""}${p.tamanho?` (tam ${p.tamanho})`:""} - ${moeda(p.preco)}\n`;});
+  itens.forEach((p,n)=>{msg+=`${n+1}. ${p.nome}${p.marca?` - ${p.marca}`:""}${p.tamanho?` (tam ${p.tamanho})`:""} - ${precoTxt(p)}\n`;});
   msg+=`\nTotal: ${moeda(total)}\n\nAinda estão disponíveis?`;
   document.getElementById("cartSend").href=`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
 }
