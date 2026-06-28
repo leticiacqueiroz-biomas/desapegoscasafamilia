@@ -42,6 +42,13 @@
   header p{margin:0;opacity:.95;font-size:1rem}
   .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
 
+  /* Botão fixo "Como funciona" no canto superior direito */
+  .topo-btn{position:fixed;top:14px;right:16px;z-index:25;color:#fff;text-decoration:none;font-weight:600;
+    font-size:.9rem;background:var(--brand-dark);border:1px solid rgba(255,255,255,.45);
+    padding:9px 16px;border-radius:999px;box-shadow:0 3px 12px rgba(0,0,0,.22);transition:.15s}
+  .topo-btn:hover{background:var(--brand)}
+  @media(max-width:480px){.topo-btn{font-size:.82rem;padding:8px 13px;top:10px;right:10px}}
+
   /* Filtros */
   .filters{
     display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
@@ -170,6 +177,8 @@
 </head>
 <body>
 
+<a class="topo-btn" href="como-funciona.html">Como funciona</a>
+
 <header>
   <!-- ✏️ EDITE: nome e descrição do seu brechó -->
   <h1>Desapegos Casa Família</h1>
@@ -231,18 +240,22 @@
 const WHATSAPP = "5513996746283";   // 👈 seu número
 
 const PRODUTOS = [
-  { nome:"Conjuntinho florido Farm (croped + saia mid)", marca:"Farm", preco:120, categoria:"Feminino", tamanho:"M", condicao:"Seminovo", fotos:["Fotos/01.png","Fotos/01_2.png"] },
+  { nome:"Conjuntinho florido Farm (croped + saia mid)", marca:"Farm", preco:150, categoria:"Feminino", tamanho:"M", condicao:"Seminovo", fotos:["Fotos/01.png","Fotos/01_2.png"] },
   { nome:"Vestido florido longo", marca:"", preco:100, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/02_1.png","Fotos/02_2.png"] },
   { nome:"Macaquinho azul Farm", marca:"Farm", preco:50, categoria:"Feminino", tamanho:"P", condicao:"Seminovo", fotos:["Fotos/03_1.png"] },
   { nome:"Vestido verde musgo estampado", marca:"", preco:40, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/04_1.png","Fotos/04_2.png"] },
-  { nome:"Macaquinho Oh Boy! estampado", marca:"Oh Boy!", preco:80, categoria:"Feminino", tamanho:"P", condicao:"Seminovo", fotos:["Fotos/05_1.png"] },
+  { nome:"Macaquinho Oh Boy! estampado", marca:"Oh Boy!", preco:80, categoria:"Feminino", tamanho:"P", condicao:"Seminovo", fotos:["Fotos/05_1.png","Fotos/05_2.png"] },
   { nome:"Túnica indiana", marca:"Comprada na Índia", preco:50, categoria:"Feminino", tamanho:"U", condicao:"Novo", fotos:["Fotos/06_1.png"] },
-  { nome:"Vestidinho curto", marca:"Iraê (Itacaré)", preco:30, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/07_1.png","Fotos/07_2.png"] },
-  { nome:"Calça amarela", marca:"P.A. Concept", preco:50, categoria:"Feminino", tamanho:"40", condicao:"Seminovo", fotos:["Fotos/08_1.png","Fotos/08_2.png"] },
-  { nome:"Calça vermelha", marca:"Shoulder", preco:80, categoria:"Feminino", tamanho:"38", condicao:"Seminovo", fotos:["Fotos/09_1.png","Fotos/09_2.png"] },
-  { nome:"Maiô dupla face", marca:"", preco:50, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/10_1.png","Fotos/10_2.png","Fotos/10_3.png"] },
-  { nome:"Maiô florido", marca:"", preco:50, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/11_1.png","Fotos/11_2.png"] },
-  { nome:"Maiô verde musgo", marca:"Renner", preco:50, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", obs:"Vem com quimono, de brinde", fotos:[] },
+  { nome:"Vestidinho curto", marca:"Ierê (Itacaré)", preco:30, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/07_1.png","Fotos/07_2.png"] },
+  { nome:"Calça amarela", marca:"P.A. Concept", preco:60, categoria:"Feminino", tamanho:"40", condicao:"Seminovo", fotos:["Fotos/08_1.png","Fotos/08_2.png"] },
+  { nome:"Calça vermelha", marca:"Shoulder", preco:100, categoria:"Feminino", tamanho:"38", condicao:"Seminovo", fotos:["Fotos/09_1.png","Fotos/09_2.png"] },
+  { nome:"Maiô dupla face", marca:"Brilho do sol", preco:50, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/10_1.png","Fotos/10_2.png","Fotos/10_3.png"] },
+  { nome:"Maiô florido", marca:"Brilho do sol", preco:50, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/11_1.png","Fotos/11_2.png"] },
+  { nome:"Maiô verde musgo", marca:"Renner", preco:50, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", obs:"Vem com quimono, de brinde", fotos:["Fotos/12_1.png","Fotos/12_2.png","Fotos/12_3.png"] },
+  { nome:"Maiô manga longa", marca:"Live!", preco:40, categoria:"Feminino", tamanho:"", condicao:"Seminovo", fotos:["Fotos/13_1.png","Fotos/13_2.png"] },
+  { nome:"Top paetês preto", marca:"L'etage", preco:40, categoria:"Feminino", tamanho:"P", condicao:"Seminovo", fotos:["Fotos/14_1.png","Fotos/14_2.png"] },
+  { nome:"Celular Redmi", marca:"Xiaomi", preco:650, categoria:"Eletrônicos", tamanho:"", condicao:"Seminovo", obs:"Sem marcas de uso / sem carregador", fotos:["Fotos/15_1.png","Fotos/15_2.png","Fotos/15_3.png"] },
+  { nome:"Aparador", marca:"", preco:100, categoria:"Casa", tamanho:"", condicao:"Usado - com marcas de uso", obs:"Sem os puxadores", fotos:["Fotos/16_1.png"] },
 ];
 
 /* ====== Daqui para baixo não precisa mexer ====== */
@@ -307,7 +320,7 @@ function render(){
         <div class="name">${p.nome}</div>
         ${p.marca?`<div class="marca">${p.marca}</div>`:""}
         <div class="meta">${p.tamanho?`Tam: ${p.tamanho} • `:""}${p.condicao}</div>
-        ${p.obs?`<div class="obs">🎁 ${p.obs}</div>`:""}
+        ${p.obs?`<div class="obs">${p.obs}</div>`:""}
         <div class="price">${moeda(p.preco)}</div>
         <button class="add-btn ${carrinho.includes(p.id)?"in-cart":""}" onclick="toggleItem(${p.id})">
           ${carrinho.includes(p.id)?"✓ No carrinho":"🛒 Adicionar ao carrinho"}
