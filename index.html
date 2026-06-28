@@ -98,6 +98,7 @@
   .card .body{padding:14px;display:flex;flex-direction:column;gap:5px;flex:1}
   .card .name{font-weight:600;font-size:1rem}
   .card .marca{font-size:.82rem;color:var(--brand);font-weight:600}
+  .card .obs{font-size:.8rem;color:var(--brand-dark);background:var(--tag);padding:3px 8px;border-radius:6px;width:fit-content}
   .card .meta{font-size:.82rem;color:var(--muted)}
   .badge{
     display:inline-block;background:var(--tag);color:var(--brand-dark);
@@ -218,7 +219,7 @@
      nome      -> nome do item
      preco     -> número, ex: 45  (sem "R$")
      categoria -> uma destas: "Feminino", "Masculino", "Infantil",
-                  "Brinquedos", "Casa"
+                  "Brinquedos", "Casa", "Eletrônicos"
      marca     -> opcional, ex: "Farm", "Nike" (deixe "" se não tiver)
      tamanho   -> opcional, ex: "M", "42", "2 anos" (deixe "" se não tiver)
      condicao  -> ex: "Novo", "Seminovo", "Usado - bom estado"
@@ -234,13 +235,19 @@ const PRODUTOS = [
   { nome:"Vestido florido longo", marca:"", preco:100, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/02_1.png","Fotos/02_2.png"] },
   { nome:"Macaquinho azul Farm", marca:"Farm", preco:50, categoria:"Feminino", tamanho:"P", condicao:"Seminovo", fotos:["Fotos/03_1.png"] },
   { nome:"Vestido verde musgo estampado", marca:"", preco:40, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/04_1.png","Fotos/04_2.png"] },
-  { nome:"Macaquinho Oh Boy! estampado", marca:"Oh Boy!", preco:80, categoria:"Feminino", tamanho:"P", condicao:"Seminovo", fotos:["Fotos/05_1.png","Fotos/05_2.png"] },
-  { nome:"Caminhão de brinquedo", marca:"", preco:30, categoria:"Brinquedos", tamanho:"", condicao:"Seminovo", fotos:[] },
+  { nome:"Macaquinho Oh Boy! estampado", marca:"Oh Boy!", preco:80, categoria:"Feminino", tamanho:"P", condicao:"Seminovo", fotos:["Fotos/05_1.png"] },
+  { nome:"Túnica indiana", marca:"Comprada na Índia", preco:50, categoria:"Feminino", tamanho:"U", condicao:"Novo", fotos:["Fotos/06_1.png"] },
+  { nome:"Vestidinho curto", marca:"Iraê (Itacaré)", preco:30, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/07_1.png","Fotos/07_2.png"] },
+  { nome:"Calça amarela", marca:"P.A. Concept", preco:50, categoria:"Feminino", tamanho:"40", condicao:"Seminovo", fotos:["Fotos/08_1.png","Fotos/08_2.png"] },
+  { nome:"Calça vermelha", marca:"Shoulder", preco:80, categoria:"Feminino", tamanho:"38", condicao:"Seminovo", fotos:["Fotos/09_1.png","Fotos/09_2.png"] },
+  { nome:"Maiô dupla face", marca:"", preco:50, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/10_1.png","Fotos/10_2.png","Fotos/10_3.png"] },
+  { nome:"Maiô florido", marca:"", preco:50, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/11_1.png","Fotos/11_2.png"] },
+  { nome:"Maiô verde musgo", marca:"Renner", preco:50, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", obs:"Vem com quimono, de brinde", fotos:[] },
 ];
 
 /* ====== Daqui para baixo não precisa mexer ====== */
 
-const CATEGORIAS = ["Todos","Feminino","Masculino","Infantil","Brinquedos","Casa"];
+const CATEGORIAS = ["Todos","Feminino","Masculino","Infantil","Brinquedos","Casa","Eletrônicos"];
 let filtroAtivo = "Todos";
 let busca = "";
 PRODUTOS.forEach((p,i)=>p.id=i);   // identifica cada produto
@@ -300,6 +307,7 @@ function render(){
         <div class="name">${p.nome}</div>
         ${p.marca?`<div class="marca">${p.marca}</div>`:""}
         <div class="meta">${p.tamanho?`Tam: ${p.tamanho} • `:""}${p.condicao}</div>
+        ${p.obs?`<div class="obs">🎁 ${p.obs}</div>`:""}
         <div class="price">${moeda(p.preco)}</div>
         <button class="add-btn ${carrinho.includes(p.id)?"in-cart":""}" onclick="toggleItem(${p.id})">
           ${carrinho.includes(p.id)?"✓ No carrinho":"🛒 Adicionar ao carrinho"}
