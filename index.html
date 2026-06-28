@@ -63,6 +63,11 @@
   .filter-btn:hover{border-color:var(--brand)}
   .filter-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
 
+  /* Botão de Doação — cor e formato diferentes */
+  .filter-btn.doacao{background:#fff;color:#d6336c;border:1.5px dashed #e75a7c;border-radius:8px;font-weight:700}
+  .filter-btn.doacao:hover{background:#fdeef3;border-color:#d6336c}
+  .filter-btn.doacao.active{background:#e75a7c;color:#fff;border-style:solid;border-color:#e75a7c}
+
   .search{
     display:block;margin:16px auto 4px;max-width:420px;width:100%;
     padding:11px 14px;border:1px solid var(--line);border-radius:10px;
@@ -318,8 +323,8 @@ const filtersEl = document.getElementById("filters");
 
 CATEGORIAS.forEach(cat=>{
   const b=document.createElement("button");
-  b.className="filter-btn"+(cat==="Todos"?" active":"");
-  b.textContent=cat;
+  b.className="filter-btn"+(cat==="Todos"?" active":"")+(cat==="Doação"?" doacao":"");
+  b.textContent=cat==="Doação"?"❤ Doação":cat;
   b.onclick=()=>{filtroAtivo=cat;document.querySelectorAll(".filter-btn").forEach(x=>x.classList.remove("active"));b.classList.add("active");render();};
   filtersEl.appendChild(b);
 });
