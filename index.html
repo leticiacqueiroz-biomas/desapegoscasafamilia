@@ -77,14 +77,24 @@
     position:relative;aspect-ratio:4/5;background:var(--tag);overflow:hidden;
     display:flex;align-items:center;justify-content:center
   }
-  .card .photo.multi{cursor:pointer}
-  .card .photo img{width:100%;height:100%;object-fit:cover}
+  .card .photo.multi{cursor:grab;touch-action:pan-y}
+  .card .photo.multi:active{cursor:grabbing}
+  .card .photo img{width:100%;height:100%;object-fit:cover;transition:opacity .18s ease;user-select:none;-webkit-user-drag:none}
   .card .photo .placeholder{color:var(--muted);font-size:.85rem;text-align:center;padding:10px}
   .photo-count{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;
-    font-size:.72rem;padding:2px 8px;border-radius:999px}
-  .dots{position:absolute;bottom:8px;left:0;right:0;display:flex;gap:5px;justify-content:center}
-  .dots .dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.6)}
-  .dots .dot.on{background:#fff}
+    font-size:.72rem;padding:2px 8px;border-radius:999px;pointer-events:none}
+  /* setas */
+  .photo .nav{position:absolute;top:50%;transform:translateY(-50%);border:none;cursor:pointer;
+    width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.42);color:#fff;font-size:1.5rem;
+    display:flex;align-items:center;justify-content:center;line-height:1;padding:0 0 3px;
+    opacity:.5;transition:opacity .15s;z-index:2}
+  .photo:hover .nav{opacity:1}
+  .photo .nav-prev{left:8px}
+  .photo .nav-next{right:8px}
+  .dots{position:absolute;bottom:8px;left:0;right:0;display:flex;gap:6px;justify-content:center;z-index:2}
+  .dots .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.55);cursor:pointer;
+    box-shadow:0 0 3px rgba(0,0,0,.3)}
+  .dots .dot.on{background:#fff;transform:scale(1.15)}
   .card .body{padding:14px;display:flex;flex-direction:column;gap:5px;flex:1}
   .card .name{font-weight:600;font-size:1rem}
   .card .marca{font-size:.82rem;color:var(--brand);font-weight:600}
@@ -222,9 +232,9 @@ const WHATSAPP = "5513996746283";   // 👈 seu número
 const PRODUTOS = [
   { nome:"Conjuntinho florido Farm (croped + saia mid)", marca:"Farm", preco:120, categoria:"Feminino", tamanho:"M", condicao:"Seminovo", fotos:["Fotos/01.png","Fotos/01_2.png"] },
   { nome:"Vestido florido longo", marca:"", preco:100, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/02_1.png","Fotos/02_2.png"] },
-  { nome:"Conjunto infantil", marca:"", preco:25, categoria:"Infantil", tamanho:"4 anos", condicao:"Novo", fotos:[] },
-  { nome:"Tênis esportivo", marca:"", preco:80, categoria:"Masculino", tamanho:"40", condicao:"Usado - bom estado", fotos:[] },
-  { nome:"Jogo de panelas", marca:"", preco:120, categoria:"Casa", tamanho:"", condicao:"Seminovo", fotos:[] },
+  { nome:"Macaquinho azul Farm", marca:"Farm", preco:50, categoria:"Feminino", tamanho:"P", condicao:"Seminovo", fotos:["Fotos/03_1.png"] },
+  { nome:"Vestido verde musgo estampado", marca:"", preco:40, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/04_1.png","Fotos/04_2.png"] },
+  { nome:"Macaquinho Oh Boy! estampado", marca:"Oh Boy!", preco:80, categoria:"Feminino", tamanho:"P", condicao:"Seminovo", fotos:["Fotos/05_1.png","Fotos/05_2.png"] },
   { nome:"Caminhão de brinquedo", marca:"", preco:30, categoria:"Brinquedos", tamanho:"", condicao:"Seminovo", fotos:[] },
 ];
 
@@ -273,16 +283,18 @@ function render(){
     let fotoHTML;
     if(fotos.length){
       const extra = fotos.length>1
-        ? `<span class="photo-count">${idx+1}/${fotos.length}</span>
+        ? `<button class="nav nav-prev" aria-label="Foto anterior">‹</button>
+           <button class="nav nav-next" aria-label="Próxima foto">›</button>
+           <span class="photo-count">${idx+1}/${fotos.length}</span>
            <div class="dots">${fotos.map((_,k)=>`<span class="dot${k===idx?" on":""}"></span>`).join("")}</div>`
         : "";
-      fotoHTML=`<img src="${fotos[idx]}" alt="${p.nome}">${extra}`;
+      fotoHTML=`<img src="${fotos[idx]}" alt="${p.nome}" draggable="false">${extra}`;
     }else{
       fotoHTML=`<div class="placeholder">📷<br>Foto em breve</div>`;
     }
-    const multi = fotos.length>1 ? `photo multi" onclick="trocarFoto(${p.id},this)` : `photo`;
+    const cls = fotos.length>1 ? "photo multi" : "photo";
     card.innerHTML=`
-      <div class="${multi}">${fotoHTML}</div>
+      <div class="${cls}" data-id="${p.id}">${fotoHTML}</div>
       <div class="body">
         <span class="badge">${p.categoria}</span>
         <div class="name">${p.nome}</div>
@@ -295,18 +307,53 @@ function render(){
       </div>`;
     grid.appendChild(card);
   });
+  ativarGalerias();
 }
 
-/* troca a foto exibida ao tocar (produtos com mais de uma foto) */
+/* ---- Galeria de fotos: swipe (arrastar), setas, bolinhas e fade ---- */
 const galeriaIdx={};
-function trocarFoto(id,el){
-  const p=PRODUTOS.find(x=>x.id===id);
-  if(!p.fotos||p.fotos.length<2)return;
-  galeriaIdx[id]=((galeriaIdx[id]||0)+1)%p.fotos.length;
-  const i=galeriaIdx[id];
-  el.querySelector("img").src=p.fotos[i];
-  el.querySelector(".photo-count").textContent=(i+1)+"/"+p.fotos.length;
-  el.querySelectorAll(".dot").forEach((d,k)=>d.classList.toggle("on",k===i));
+function ativarGalerias(){
+  document.querySelectorAll(".photo.multi").forEach(el=>{
+    const id=+el.dataset.id;
+    const p=PRODUTOS.find(x=>x.id===id);
+    const total=p.fotos.length;
+    const img=el.querySelector("img");
+
+    const mostrar=(novo)=>{
+      const i=((novo%total)+total)%total;
+      if(i===(galeriaIdx[id]||0) && img.src.includes(p.fotos[i].split("/").pop())) {}
+      galeriaIdx[id]=i;
+      // pré-carrega e faz o fade
+      const prox=new Image();
+      prox.onload=()=>{ img.style.opacity="1"; };
+      img.style.opacity="0";
+      setTimeout(()=>{ prox.src=p.fotos[i]; img.src=p.fotos[i]; },110);
+      el.querySelector(".photo-count").textContent=(i+1)+"/"+total;
+      el.querySelectorAll(".dot").forEach((d,k)=>d.classList.toggle("on",k===i));
+    };
+
+    // swipe / arrastar
+    let x0=null,y0=null;
+    el.addEventListener("touchstart",e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY;},{passive:true});
+    el.addEventListener("touchend",e=>{
+      if(x0===null)return;
+      const dx=e.changedTouches[0].clientX-x0, dy=e.changedTouches[0].clientY-y0;
+      if(Math.abs(dx)>35 && Math.abs(dx)>Math.abs(dy)) mostrar((galeriaIdx[id]||0)+(dx<0?1:-1));
+      x0=null;
+    });
+    // mouse drag (no computador)
+    el.addEventListener("mousedown",e=>{x0=e.clientX;});
+    el.addEventListener("mouseup",e=>{
+      if(x0===null)return;
+      const dx=e.clientX-x0;
+      if(Math.abs(dx)>35) mostrar((galeriaIdx[id]||0)+(dx<0?1:-1));
+      x0=null;
+    });
+    // setas e bolinhas
+    el.querySelector(".nav-prev").addEventListener("click",ev=>{ev.stopPropagation();mostrar((galeriaIdx[id]||0)-1);});
+    el.querySelector(".nav-next").addEventListener("click",ev=>{ev.stopPropagation();mostrar((galeriaIdx[id]||0)+1);});
+    el.querySelectorAll(".dot").forEach((d,k)=>d.addEventListener("click",ev=>{ev.stopPropagation();mostrar(k);}));
+  });
 }
 
 /* ---- Carrinho ---- */
