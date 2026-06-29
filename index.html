@@ -18,16 +18,16 @@
 <link rel="icon" href="Fotos/logo.png">
 <style>
   :root{
-    --bg:#f7f3ee;          /* creme */
+    --bg:#f1f6f5;          /* verde-água bem claro */
     --card:#ffffff;        /* branco */
-    --ink:#5b4a43;         /* marrom quente */
-    --muted:#9c8a80;
-    --line:#ece1d8;
-    --brand:#c17b69;       /* terracota rosé */
-    --brand-dark:#a85d4c;  /* terracota escuro */
+    --ink:#2f4a52;         /* teal escuro (texto) */
+    --muted:#6f8a90;
+    --line:#dbe8e6;
+    --brand:#3c7c8c;       /* teal/petróleo */
+    --brand-dark:#2f6473;  /* teal escuro */
     --wa:#25d366;          /* verde whatsapp */
     --wa-dark:#1da851;
-    --tag:#f2e4dc;         /* blush claro */
+    --tag:#e3eee9;         /* verde-sálvia claro */
   }
   *{box-sizing:border-box}
   body{
@@ -35,10 +35,12 @@
     background:var(--bg);color:var(--ink);line-height:1.5;
   }
   header{
-    background:#fdfdfd;padding:22px 20px 18px;text-align:center;
+    background:#fdfdfd;padding:14px 20px 12px;text-align:center;
     border-bottom:1px solid var(--line);
   }
-  header .logo{width:300px;max-width:80%;height:auto;display:block;margin:0 auto}
+  header .logo{width:280px;max-width:72%;height:auto;display:block;margin:0 auto}
+  header .tagline{margin:6px 0 0;color:var(--brand);font-size:.78rem;letter-spacing:2.5px;
+    text-transform:uppercase;font-weight:600}
   header h1{margin:0 0 6px;font-size:1.9rem;letter-spacing:.3px}
   header p{margin:0;opacity:.95;font-size:1rem}
   .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
@@ -212,7 +214,7 @@
 
 <header>
   <!-- ✏️ EDITE: nome e descrição do seu brechó -->
-  <img class="logo" src="Fotos/logo.png" alt="desapegadas — marketplace de desapegos em Serra Grande">
+  <img class="logo" src="Fotos/logo-novo.png" alt="desapegadas — Deixando a pegada da sustentabilidade">
 </header>
 
 <div class="wrap">
@@ -295,8 +297,8 @@ const PRODUTOS = [
   { nome:"Maiô dupla face", marca:"Brilho do sol", preco:50, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/10_1.png","Fotos/10_2.png","Fotos/10_3.png"] },
   { nome:"Maiô florido", marca:"Brilho do sol", preco:50, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/11_1.png","Fotos/11_2.png"] },
   { nome:"Maiô verde musgo", marca:"Renner", preco:50, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", obs:"Vem com quimono, de brinde", fotos:["Fotos/12_1.png","Fotos/12_2.png","Fotos/12_3.png"] },
-  { nome:"Maiô manga longa", marca:"Live!", preco:60, categoria:"Feminino", tamanho:"", condicao:"Seminovo", fotos:["Fotos/13_1.png","Fotos/13_2.png"] },
-  { nome:"Top paetês preto", marca:"L'etage", preco:50, categoria:"Feminino", tamanho:"P", condicao:"Seminovo", fotos:["Fotos/14_1.png","Fotos/14_2.png"] },
+  { nome:"Maiô manga longa", marca:"Live!", preco:60, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/13_1.png","Fotos/13_2.png"] },
+  { nome:"Top paetês preto", marca:"L'etage", preco:50, categoria:"Feminino", tamanho:"P", condicao:"Seminovo", obs:"É bem pequeno! Pra quem tem pouco seio", fotos:["Fotos/14_1.png","Fotos/14_2.png"] },
   { nome:"Celular Redmi", marca:"Xiaomi", preco:650, categoria:"Eletrônicos", tamanho:"", condicao:"Seminovo", obs:"Sem marcas de uso / sem carregador", fotos:["Fotos/15_1.png","Fotos/15_2.png","Fotos/15_3.png"] },
   { nome:"Aparador", marca:"", preco:100, categoria:"Casa", tamanho:"", condicao:"Usado - com marcas de uso", obs:"Sem os puxadores", fotos:["Fotos/16_1.png"] },
   { nome:"Mochila", marca:"", preco:0, categoria:"Doação", tamanho:"", condicao:"Usado - com marcas de uso", obs:"O zíper está estragado, mas a mochila é muito boa", fotos:["Fotos/17_1.jpeg","Fotos/17_2.jpeg"] },
