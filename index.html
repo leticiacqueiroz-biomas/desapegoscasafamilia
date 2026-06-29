@@ -3,31 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Desapegos Casa Família — Roupas, Calçados, Brinquedos e Itens para Casa</title>
+<title>desapegadas — Desapegos em Serra Grande</title>
 
 <!-- ✏️ PREVIEW DO LINK (WhatsApp/Instagram). Depois de publicar no Netlify,
      troque "SEU-SITE" abaixo (nas 2 linhas) pelo endereço do seu site. -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="Desapegos Casa Família">
-<meta property="og:description" content="Roupas, calçados, brinquedos e itens para casa — seminovos e com preço de amigo. Monte seu carrinho e chame no WhatsApp!">
+<meta property="og:title" content="desapegadas">
+<meta property="og:description" content="Roupas, calçados, brinquedos, livros e itens para casa — em Serra Grande, com preço de amigo. Monte seu carrinho e chame no WhatsApp!">
 <meta property="og:image" content="https://SEU-SITE.netlify.app/og-image.jpg">
 <meta property="og:url" content="https://SEU-SITE.netlify.app/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="description" content="Desapegos Casa Família — roupas, calçados, brinquedos e itens para casa com preço de amigo.">
+<meta name="description" content="desapegadas — desapegos de roupas, livros e itens para casa em Serra Grande.">
 
-<link rel="icon" href="og-image.jpg">
+<link rel="icon" href="Fotos/logo.png">
 <style>
   :root{
-    --bg:#f4f8fb;          /* branco azulado */
+    --bg:#f7f3ee;          /* creme */
     --card:#ffffff;        /* branco */
-    --ink:#13343f;         /* texto escuro */
-    --muted:#5e7785;
-    --line:#d9e7ee;
-    --brand:#1c80b8;       /* azul */
-    --brand-dark:#0f5c5c;  /* verde marinho */
+    --ink:#5b4a43;         /* marrom quente */
+    --muted:#9c8a80;
+    --line:#ece1d8;
+    --brand:#c17b69;       /* terracota rosé */
+    --brand-dark:#a85d4c;  /* terracota escuro */
     --wa:#25d366;          /* verde whatsapp */
     --wa-dark:#1da851;
-    --tag:#e4f0f7;         /* azul bem claro */
+    --tag:#f2e4dc;         /* blush claro */
   }
   *{box-sizing:border-box}
   body{
@@ -35,9 +35,10 @@
     background:var(--bg);color:var(--ink);line-height:1.5;
   }
   header{
-    background:linear-gradient(135deg,var(--brand),var(--brand-dark));
-    color:#fff;padding:34px 20px 30px;text-align:center;
+    background:#fdfdfd;padding:22px 20px 18px;text-align:center;
+    border-bottom:1px solid var(--line);
   }
+  header .logo{width:300px;max-width:80%;height:auto;display:block;margin:0 auto}
   header h1{margin:0 0 6px;font-size:1.9rem;letter-spacing:.3px}
   header p{margin:0;opacity:.95;font-size:1rem}
   .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
@@ -211,8 +212,7 @@
 
 <header>
   <!-- ✏️ EDITE: nome e descrição do seu brechó -->
-  <h1>Desapegos Casa Família</h1>
-  <p>Roupas, calçados, brinquedos e itens para casa — seminovos e com preço de amigo 💛</p>
+  <img class="logo" src="Fotos/logo.png" alt="desapegadas — marketplace de desapegos em Serra Grande">
 </header>
 
 <div class="wrap">
@@ -494,7 +494,7 @@ function renderCart(){
   }
 
   // monta a mensagem do WhatsApp com o pedido completo
-  let msg="Olá! Gostaria destes itens do Desapegos Casa Família:\n\n";
+  let msg="Olá! Gostaria destes itens da desapegadas:\n\n";
   itens.forEach((p,n)=>{msg+=`${n+1}. ${p.nome}${p.marca?` - ${p.marca}`:""}${p.tamanho?` (tam ${p.tamanho})`:""} - ${precoTxt(p)}\n`;});
   msg+=`\nTotal: ${moeda(total)}\n\nAinda estão disponíveis?`;
   document.getElementById("cartSend").href=`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
