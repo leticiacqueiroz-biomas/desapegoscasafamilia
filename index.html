@@ -223,14 +223,12 @@
 
 <script>
 /* =====================================================================
-   ✏️  COMO EDITAR ESTE SITE  (é só mexer nas 2 áreas abaixo)
+   ✏️  COMO OS DADOS FUNCIONAM
    ---------------------------------------------------------------------
-   1) WHATSAPP: troque o número abaixo pelo SEU (com DDD, sem espaços).
-      Formato: 55 + DDD + número.  Ex.: "5573999998888"
-   2) PRODUTOS: cada item fica entre chaves { ... }. Copie um bloco,
-      cole abaixo e troque os dados. Para apagar um item, apague o bloco.
-
-   Campos de cada produto:
+   Os ITENS agora vêm todos da PLANILHA (Cadastro de Itens) — não se
+   edita mais a lista aqui. Aprove os itens na planilha (Aprovado = TRUE)
+   e eles aparecem sozinhos na loja. Cada item na planilha tem estes
+   campos (colunas):
      nome      -> nome do item
      preco     -> número, ex: 45  (sem "R$")
      categoria -> uma destas: "Feminino", "Masculino", "Infantil",
@@ -259,33 +257,9 @@ const VENDEDORES = {
   // "Maria":  { zap:"5573999990000", nota:4.8, avaliacoes:12 },
 };
 
-const PRODUTOS = [
-  { nome:"Conjuntinho florido Farm (croped + saia mid)", marca:"Farm", preco:200, categoria:"Feminino", tamanho:"M", condicao:"Seminovo", vendido:true, fotos:["Fotos/01.png","Fotos/01_2.png"] },
-  { nome:"Vestido florido longo", marca:"", preco:100, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/02_1.png","Fotos/02_2.png"] },
-  { nome:"Macaquinho azul Farm", marca:"Farm", preco:50, categoria:"Feminino", tamanho:"P", condicao:"Seminovo", fotos:["Fotos/03_1.png"] },
-  { nome:"Vestido verde musgo estampado", marca:"", preco:40, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/04_1.png","Fotos/04_2.png"] },
-  { nome:"Macaquinho Oh Boy! estampado", marca:"Oh Boy!", preco:80, categoria:"Feminino", tamanho:"P", condicao:"Seminovo", fotos:["Fotos/05_1.png","Fotos/05_2.png"] },
-  { nome:"Túnica indiana", marca:"Comprada na Índia", preco:50, categoria:"Feminino", tamanho:"U", condicao:"Novo", fotos:["Fotos/06_1.png"] },
-  { nome:"Vestidinho curto", marca:"Ierê (Itacaré)", preco:30, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/07_1.png","Fotos/07_2.png"] },
-  { nome:"Calça amarela", marca:"P.A. Concept", preco:80, categoria:"Feminino", tamanho:"40", condicao:"Seminovo", fotos:["Fotos/08_1.png","Fotos/08_2.png"] },
-  { nome:"Calça vermelha", marca:"Shoulder", preco:100, categoria:"Feminino", tamanho:"38", condicao:"Seminovo", fotos:["Fotos/09_1.png","Fotos/09_2.png"] },
-  { nome:"Maiô dupla face", marca:"Brilho do sol", preco:50, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/10_1.png","Fotos/10_2.png","Fotos/10_3.png"] },
-  { nome:"Maiô florido", marca:"Brilho do sol", preco:50, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/11_1.png","Fotos/11_2.png"] },
-  { nome:"Maiô verde musgo", marca:"Renner", preco:50, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", obs:"Vem com quimono, de brinde", fotos:["Fotos/12_1.png","Fotos/12_2.png","Fotos/12_3.png"] },
-  { nome:"Maiô manga longa", marca:"Live!", preco:60, categoria:"Feminino", tamanho:"G", condicao:"Seminovo", fotos:["Fotos/13_1.png","Fotos/13_2.png"] },
-  { nome:"Top paetês preto", marca:"L'etage", preco:50, categoria:"Feminino", tamanho:"P", condicao:"Seminovo", obs:"É bem pequeno! Pra quem tem pouco seio", fotos:["Fotos/14_1.png","Fotos/14_2.png"] },
-  { nome:"Celular Redmi", marca:"Xiaomi", preco:650, categoria:"Eletrônicos", tamanho:"", condicao:"Seminovo", obs:"Sem marcas de uso / sem carregador", fotos:["Fotos/15_1.png","Fotos/15_2.png","Fotos/15_3.png"] },
-  { nome:"Aparador", marca:"", preco:300, categoria:"Casa", tamanho:"", condicao:"Usado - com marcas de uso", obs:"Sem os puxadores", vendido:true, fotos:["Fotos/16_1.png"] },
-  { nome:"Mochila", marca:"", preco:0, categoria:"Doação", tamanho:"", condicao:"Usado - com marcas de uso", obs:"O zíper está estragado, mas a mochila é muito boa", fotos:["Fotos/17_1.jpeg","Fotos/17_2.jpeg"] },
-  { nome:"Bolsa colombiana", marca:"", preco:70, categoria:"Feminino", tamanho:"", condicao:"Usado - bom estado", fotos:["Fotos/18_1.png","Fotos/18_2.jpeg"] },
-  { nome:"Livros de passatempos", marca:"", preco:0, categoria:"Doação", tamanho:"", condicao:"Usado - bom estado", fotos:["Fotos/19_1.jpeg","Fotos/19_2.jpeg"] },
-  { nome:"Blusa branca de babados", marca:"", preco:0, categoria:"Doação", tamanho:"G", condicao:"Usado - bom estado", fotos:["Fotos/20_1.jpeg"] },
-  { nome:"Não se esqueça", marca:"Mario Sergio Cortella", preco:20, categoria:"Livros", tamanho:"", condicao:"Novo", fotos:["Fotos/21_1.jpeg"] },
-  { nome:"A casa da Madrinha (infantil)", marca:"Lygia Bojunga", preco:20, categoria:"Livros", tamanho:"", condicao:"Novo", fotos:["Fotos/22_1.jpeg"] },
-  { nome:"Igualdade", marca:"Thomas Piketty, Michael Sandel", preco:20, categoria:"Livros", tamanho:"", condicao:"Novo", fotos:["Fotos/23_1.jpeg"] },
-  { nome:"O que nos faz bons ou maus", marca:"Paul Bloom", preco:20, categoria:"Livros", tamanho:"", condicao:"Novo", fotos:["Fotos/24_1.jpeg"] },
-  { nome:"O velho e o mar", marca:"Ernest Hemingway", preco:20, categoria:"Livros", tamanho:"", condicao:"Novo", fotos:["Fotos/25.jpeg"] },
-];
+/* Os itens agora vêm todos da PLANILHA (leitura automática mais abaixo).
+   Esta lista fica vazia de propósito. */
+const PRODUTOS = [];
 
 /* ====== Daqui para baixo não precisa mexer ====== */
 
@@ -293,6 +267,7 @@ const CATEGORIAS = ["Todos","Feminino","Masculino","Infantil","Brinquedos","Casa
 let filtroAtivo = "Todos";
 let busca = "";
 let filtroVendedor = null;         // lojinha: filtra por vendedor
+let carregando = true;             // enquanto busca os itens da planilha
 function reindex(){ PRODUTOS.forEach((p,i)=>p.id=i); }   // identifica cada produto
 reindex();
 
@@ -346,7 +321,7 @@ function render(){
     return okCat&&okVend&&okBusca;
   });
   grid.innerHTML="";
-  if(itens.length===0){grid.innerHTML='<p class="empty">Nenhum item encontrado. 🙃</p>';return;}
+  if(itens.length===0){grid.innerHTML=carregando?'<p class="empty">Carregando itens...</p>':'<p class="empty">Nenhum item encontrado. 🙃</p>';return;}
   itens.forEach(p=>{
     const card=document.createElement("div");card.className="card"+(p.vendido?" vendido":"");
     const fotos=p.fotos||[];
@@ -539,6 +514,7 @@ async function carregarPlanilhas(){
     VENDEDORES[nome].nota=a.reduce((s,n)=>s+n,0)/a.length; VENDEDORES[nome].avaliacoes=a.length;
   });
   if(extra.length) PRODUTOS.push(...extra);
+  carregando=false;
   reindex(); render();
 }
 
