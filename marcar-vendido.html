@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marcar como vendido — desapegadas</title>
+<style>
+  :root{
+    --bg:#f1f6f5; --card:#ffffff; --ink:#2f4a52; --muted:#6f8a90; --line:#dbe8e6;
+    --brand:#3c7c8c; --brand-dark:#2f6473; --tag:#e3eee9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.5}
+  header{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;
+    padding:28px 20px;text-align:center}
+  header h1{margin:0 0 6px;font-size:1.4rem}
+  header p{margin:0;opacity:.95;font-size:.92rem}
+  .voltar{position:fixed;top:14px;left:16px;z-index:5;color:#fff;text-decoration:none;font-weight:600;
+    font-size:.9rem;background:var(--brand-dark);border:1px solid rgba(255,255,255,.45);
+    padding:8px 15px;border-radius:999px}
+  .wrap{max-width:520px;margin:0 auto;padding:22px 18px 60px}
+  label{display:block;font-weight:600;font-size:.9rem;margin:0 0 6px}
+  select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font-size:1rem;background:#fff;color:var(--ink)}
+  select:focus{outline:none;border-color:var(--brand)}
+  .item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+    margin-top:12px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .item .info{font-size:.95rem}
+  .item .info small{color:var(--muted);display:block}
+  .item button{background:#fff;border:1.5px solid var(--brand);color:var(--brand-dark);border-radius:10px;
+    padding:9px 12px;font-weight:600;cursor:pointer;white-space:nowrap}
+  .item button:hover{background:var(--tag)}
+  .item.feito{opacity:.55}
+  .item.feito button{background:var(--brand);color:#fff;border-color:var(--brand);cursor:default}
+  .aviso{text-align:center;color:var(--muted);padding:24px 8px}
+</style>
+</head>
+<body>
+
+<a class="voltar" href="index.html">← Voltar</a>
+
+<header>
+  <h1>Marcar item como vendido</h1>
+  <p>Vendeu uma peça? Marque aqui que ela sai da loja 💚</p>
+</header>
+
+<div class="wrap">
+  <label>Seu nome (vendedora)</label>
+  <select id="vend"><option value="">Carregando vendedoras...</option></select>
+  <div id="lista"></div>
+</div>
+
+<script>
+const ENDPOINT = "https://script.google.com/macros/s/AKfycby5BZzMv0qg0IwTz26R8dY_bK6vy0HWRvsgExIPKW9wTa9_H011cewy4G8jG06nk5iBYA/exec";
+/* URLs das planilhas publicadas (itens + as outras, para achar a lista de vendedoras) */
+const CSV_ITENS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR24Iab_BCHKiNfKjbjoZRrZRVoqzbiD4he7iwRYCNsNd6mUtsUI4w-DwEgdpIUx-B6bFWyNWO0en6I/pub?output=csv";
+const CSV_URLS = [
+  CSV_ITENS,
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQCoRGqgcf6Yo3mVH3RZz90s-XdOsgKXwtIAY5lydDtGmUNUKRl-DPdTOJFLF7uCt7Jf-QSvVmBvrom/pub?output=csv",
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vSVnPDOe9rtTnkCothPs0B7ttoAycLcVSIRLCm0yN8fzcEH0d00xsE6H_16dL7aw0KdNUwsqAXcFKxI/pub?output=csv"
+];
+
+const params=new URLSearchParams(location.search);
+
+function parseCSV(txt){
+  const rows=[]; let row=[], cur="", q=false;
+  for(let i=0;i<txt.length;i++){ const c=txt[i];
+    if(q){ if(c==='"'){ if(txt[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+    else { if(c==='"') q=true; else if(c===','){ row.push(cur); cur=""; }
+      else if(c==='\n'){ row.push(cur); rows.push(row); row=[]; cur=""; }
+      else if(c!=='\r') cur+=c; } }
+  if(cur!==""||row.length){ row.push(cur); rows.push(row); }
+  return rows;
+}
+const ehTrue=v=>["true","verdadeiro","sim","x","1"].includes((v||"").toString().trim().toLowerCase());
+const moeda=v=>{const n=Number((v||"").toString().replace(",","."));return (!n)?"Grátis":"R$ "+n.toFixed(2).replace(".",",");};
+
+async function baixar(url){
+  try{ return parseCSV(await (await fetch(url)).text()).filter(r=>r.some(c=>(c||"").trim()!=="")); }
+  catch(e){ return null; }
+}
+
+/* Popular a lista de vendedoras (só aprovadas, da planilha de Vendedoras) */
+async function carregarVendedoras(){
+  const nomes=new Set(); let achou=false;
+  for(const url of CSV_URLS){
+    const rows=await baixar(url); if(!rows || rows.length<2) continue;
+    const head=rows[0].map(h=>(h||"").trim().toLowerCase()); const col=s=>head.findIndex(h=>h.includes(s));
+    if(col("quem te convidou")>-1){        // é a planilha de Vendedoras
+      achou=true; const cNome=col("nome"), cAp=col("aprov");
+      rows.slice(1).forEach(r=>{ if((cAp<0||ehTrue(r[cAp])) && (r[cNome]||"").trim()) nomes.add((r[cNome]||"").trim()); });
+    }
+  }
+  if(!achou || !nomes.size){               // fallback: nomes dos itens aprovados
+    const rows=await baixar(CSV_ITENS);
+    if(rows && rows.length>1){
+      const head=rows[0].map(h=>(h||"").trim().toLowerCase()); const col=s=>head.findIndex(h=>h.includes(s));
+      const cVend=col("vendedor"), cAp=col("aprov");
+      rows.slice(1).forEach(r=>{ if((cAp<0||ehTrue(r[cAp])) && (r[cVend]||"").trim()) nomes.add((r[cVend]||"").trim()); });
+    }
+  }
+  const sel=document.getElementById("vend");
+  const arr=[...nomes].sort((a,b)=>a.localeCompare(b,"pt"));
+  sel.innerHTML='<option value="">Escolha seu nome...</option>'+arr.map(n=>`<option>${n}</option>`).join("");
+  const pre=params.get("v"); if(pre){ sel.value=pre; }
+  if(sel.value) carregar();
+}
+
+async function carregar(){
+  const vend=document.getElementById("vend").value.trim();
+  const lista=document.getElementById("lista");
+  if(!vend){ lista.innerHTML=""; return; }
+  lista.innerHTML='<p class="aviso">Carregando seus itens...</p>';
+  const rows=await baixar(CSV_ITENS);
+  if(!rows){ lista.innerHTML='<p class="aviso">Não consegui carregar agora. Tente de novo.</p>'; return; }
+  const head=rows[0].map(h=>(h||"").trim().toLowerCase()); const col=s=>head.findIndex(h=>h.includes(s));
+  const cVend=col("vendedor"), cNome=col("nome do item"), cPreco=col("pre"), cAp=col("aprov"), cVdo=col("vendido");
+  const meus=rows.slice(1).filter(r=>
+    (r[cVend]||"").trim().toLowerCase()===vend.toLowerCase()
+    && (cAp<0 || ehTrue(r[cAp]))
+    && (cVdo<0 || !ehTrue(r[cVdo])) );
+  if(!meus.length){ lista.innerHTML='<p class="aviso">Você não tem itens ativos para marcar como vendido. 🙂</p>'; return; }
+  lista.innerHTML="";
+  meus.forEach(r=>{
+    const nome=(r[cNome]||"").trim();
+    const div=document.createElement("div"); div.className="item";
+    div.innerHTML=`<div class="info">${nome}<small>${moeda(r[cPreco])}</small></div><button>✓ Vendido</button>`;
+    div.querySelector("button").addEventListener("click",async(ev)=>{
+      const b=ev.target; b.disabled=true; b.textContent="...";
+      try{
+        await fetch(ENDPOINT,{method:"POST",mode:"no-cors",
+          headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:JSON.stringify({tipo:"vendido",vendedor:vend,nome})});
+        div.classList.add("feito"); b.textContent="Vendido ✓";
+      }catch(e){ b.disabled=false; b.textContent="✓ Vendido"; alert("Não deu pra marcar agora. Tente de novo."); }
+    });
+    lista.appendChild(div);
+  });
+}
+
+document.getElementById("vend").addEventListener("change",carregar);
+carregarVendedoras();
+</script>
+</body>
+</html>
