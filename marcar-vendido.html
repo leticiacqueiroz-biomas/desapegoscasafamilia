@@ -80,24 +80,14 @@ async function baixar(url){
   catch(e){ return null; }
 }
 
-/* Popular a lista de vendedoras (só aprovadas, da planilha de Vendedoras) */
+/* Popular a lista de vendedoras a partir dos itens aprovados */
 async function carregarVendedoras(){
-  const nomes=new Set(); let achou=false;
-  for(const url of CSV_URLS){
-    const rows=await baixar(url); if(!rows || rows.length<2) continue;
+  const nomes=new Set();
+  const rows=await baixar(CSV_ITENS);
+  if(rows && rows.length>1){
     const head=rows[0].map(h=>(h||"").trim().toLowerCase()); const col=s=>head.findIndex(h=>h.includes(s));
-    if(col("quem te convidou")>-1){        // é a planilha de Vendedoras
-      achou=true; const cNome=col("nome"), cAp=col("aprov");
-      rows.slice(1).forEach(r=>{ if((cAp<0||ehTrue(r[cAp])) && (r[cNome]||"").trim()) nomes.add((r[cNome]||"").trim()); });
-    }
-  }
-  if(!achou || !nomes.size){               // fallback: nomes dos itens aprovados
-    const rows=await baixar(CSV_ITENS);
-    if(rows && rows.length>1){
-      const head=rows[0].map(h=>(h||"").trim().toLowerCase()); const col=s=>head.findIndex(h=>h.includes(s));
-      const cVend=col("vendedor"), cAp=col("aprov");
-      rows.slice(1).forEach(r=>{ if((cAp<0||ehTrue(r[cAp])) && (r[cVend]||"").trim()) nomes.add((r[cVend]||"").trim()); });
-    }
+    const cVend=col("vendedor"), cAp=col("aprov");
+    rows.slice(1).forEach(r=>{ if((cAp<0||ehTrue(r[cAp])) && (r[cVend]||"").trim()) nomes.add((r[cVend]||"").trim()); });
   }
   const sel=document.getElementById("vend");
   const arr=[...nomes].sort((a,b)=>a.localeCompare(b,"pt"));
