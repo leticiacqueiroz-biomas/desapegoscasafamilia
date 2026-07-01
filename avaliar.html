@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avaliar vendedora — desapegadas</title>
+<style>
+  :root{
+    --bg:#f1f6f5; --card:#ffffff; --ink:#2f4a52; --muted:#6f8a90; --line:#dbe8e6;
+    --brand:#3c7c8c; --brand-dark:#2f6473; --tag:#e3eee9; --star:#e0a93b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.5}
+  header{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;
+    padding:30px 20px;text-align:center}
+  header h1{margin:0;font-size:1.5rem}
+  .voltar{position:fixed;top:14px;left:16px;z-index:5;color:#fff;text-decoration:none;font-weight:600;
+    font-size:.9rem;background:var(--brand-dark);border:1px solid rgba(255,255,255,.45);
+    padding:8px 15px;border-radius:999px}
+  .wrap{max-width:520px;margin:0 auto;padding:24px 18px 60px}
+  form{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+  label{display:block;font-weight:600;font-size:.9rem;margin:14px 0 6px}
+  label .opt{color:var(--muted);font-weight:400;font-size:.82rem}
+  input,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;
+    font-size:1rem;background:#fff;color:var(--ink);font-family:inherit}
+  input:focus,textarea:focus{outline:none;border-color:var(--brand)}
+  textarea{min-height:80px;resize:vertical}
+  .quem{text-align:center;font-size:1.1rem;margin:0 0 4px}
+  .quem b{color:var(--brand-dark)}
+  .estrelas{display:flex;justify-content:center;gap:6px;font-size:2.4rem;margin:6px 0 4px;cursor:pointer}
+  .estrelas span{color:#d7e2e0;transition:.1s}
+  .estrelas span.on{color:var(--star)}
+  .nota-label{text-align:center;color:var(--muted);font-size:.85rem;min-height:1.2em}
+  button{margin-top:22px;width:100%;background:var(--brand);color:#fff;border:none;border-radius:12px;
+    padding:14px;font-size:1.05rem;font-weight:700;cursor:pointer}
+  button:hover{background:var(--brand-dark)}
+  button:disabled{opacity:.6;cursor:default}
+  .msg{display:none;text-align:center;padding:30px 16px}
+  .msg.show{display:block}
+  .msg .ok{font-size:2.4rem}
+</style>
+</head>
+<body>
+
+<a class="voltar" href="index.html">← Voltar</a>
+
+<header>
+  <h1>Avaliar vendedora</h1>
+</header>
+
+<div class="wrap">
+  <form id="form">
+    <p class="quem">Como foi sua compra com <b id="quemNome">a vendedora</b>?</p>
+
+    <div class="estrelas" id="estrelas">
+      <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span>
+      <span data-v="4">★</span><span data-v="5">★</span>
+    </div>
+    <div class="nota-label" id="notaLabel">Toque nas estrelas</div>
+
+    <label>Comentário <span class="opt">(opcional)</span></label>
+    <textarea name="comentario" placeholder="Conte como foi: atendimento, peça, entrega..."></textarea>
+
+    <label>Seu nome <span class="opt">(opcional)</span></label>
+    <input name="comprador" placeholder="Ex: Ana">
+
+    <button type="submit" id="btn">Enviar avaliação</button>
+  </form>
+
+  <div class="msg" id="msg">
+    <div class="ok">⭐</div>
+    <h2>Obrigada pela avaliação!</h2>
+    <p>Sua nota ajuda toda a comunidade da desapegadas a confiar.</p>
+    <p><a href="index.html">← Voltar para a loja</a></p>
+  </div>
+</div>
+
+<script>
+/* ✏️ COLE AQUI a URL do seu app do Google (Apps Script), entre as aspas: */
+const ENDPOINT = "https://script.google.com/macros/s/AKfycby5BZzMv0qg0IwTz26R8dY_bK6vy0HWRvsgExIPKW9wTa9_H011cewy4G8jG06nk5iBYA/exec";
+
+/* a vendedora vem pelo link: avaliar.html?v=NomeDaVendedora */
+const params=new URLSearchParams(location.search);
+const vendedor=params.get("v")||"";
+if(vendedor) document.getElementById("quemNome").textContent=vendedor;
+
+let nota=0;
+const labels={1:"Péssimo",2:"Ruim",3:"Ok",4:"Muito bom",5:"Excelente!"};
+const estrelas=document.querySelectorAll("#estrelas span");
+function pintar(n){estrelas.forEach(s=>s.classList.toggle("on",+s.dataset.v<=n));}
+estrelas.forEach(s=>{
+  s.addEventListener("mouseenter",()=>pintar(+s.dataset.v));
+  s.addEventListener("click",()=>{nota=+s.dataset.v;pintar(nota);document.getElementById("notaLabel").textContent=labels[nota];});
+});
+document.getElementById("estrelas").addEventListener("mouseleave",()=>pintar(nota));
+
+document.getElementById("form").addEventListener("submit",async(e)=>{
+  e.preventDefault();
+  if(!nota){alert("Toque nas estrelas para dar a nota 🙂");return;}
+  const btn=document.getElementById("btn");
+  btn.disabled=true; btn.textContent="Enviando...";
+  const f=e.target;
+  const payload={tipo:"avaliacao",vendedor,nota,comentario:f.comentario.value,comprador:f.comprador.value};
+  try{
+    await fetch(ENDPOINT,{method:"POST",mode:"no-cors",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
+    f.style.display="none";
+    document.getElementById("msg").classList.add("show");
+    window.scrollTo({top:0,behavior:"smooth"});
+  }catch(err){
+    btn.disabled=false; btn.textContent="Enviar avaliação";
+    alert("Não foi possível enviar agora. Tente de novo em instantes.");
+  }
+});
+</script>
+</body>
+</html>

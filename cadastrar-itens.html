@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastrar itens — desapegadas</title>
+<style>
+  :root{
+    --bg:#f1f6f5; --card:#ffffff; --ink:#2f4a52; --muted:#6f8a90; --line:#dbe8e6;
+    --brand:#3c7c8c; --brand-dark:#2f6473; --tag:#e3eee9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.5}
+  header{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;
+    padding:28px 20px;text-align:center}
+  header h1{margin:0 0 6px;font-size:1.5rem}
+  header p{margin:0;opacity:.95;font-size:.95rem}
+  .voltar{position:fixed;top:14px;left:16px;z-index:5;color:#fff;text-decoration:none;font-weight:600;
+    font-size:.9rem;background:var(--brand-dark);border:1px solid rgba(255,255,255,.45);
+    padding:8px 15px;border-radius:999px}
+  .wrap{max-width:580px;margin:0 auto;padding:24px 18px 60px}
+  .bloco{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+  .vendedor-box{background:var(--tag);border-color:var(--brand)}
+  label{display:block;font-weight:600;font-size:.9rem;margin:12px 0 5px}
+  label .opt{color:var(--muted);font-weight:400;font-size:.82rem}
+  input,select,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;
+    font-size:1rem;background:#fff;color:var(--ink);font-family:inherit}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand)}
+  textarea{min-height:56px;resize:vertical}
+  .hint{font-size:.8rem;color:var(--muted);margin-top:4px}
+  .item-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+  .item-head h3{margin:0;font-size:1.05rem;color:var(--brand-dark)}
+  .rm-item{background:none;border:none;color:#c0392b;cursor:pointer;font-size:.85rem}
+  .fotos-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .fotos-preview img{width:60px;height:75px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+  .add-item{width:100%;background:#fff;border:1.5px dashed var(--brand);color:var(--brand-dark);
+    border-radius:12px;padding:12px;font-weight:600;cursor:pointer;font-size:.95rem}
+  .add-item:hover{background:var(--tag)}
+  .enviar{margin-top:18px;width:100%;background:var(--brand);color:#fff;border:none;border-radius:12px;
+    padding:14px;font-size:1.05rem;font-weight:700;cursor:pointer}
+  .enviar:hover{background:var(--brand-dark)}
+  .enviar:disabled{opacity:.6;cursor:default}
+  .msg{display:none;text-align:center;padding:24px 8px}
+  .msg.show{display:block}
+  .msg .ok{font-size:2.4rem}
+  .msg a{color:var(--brand-dark)}
+</style>
+</head>
+<body>
+
+<a class="voltar" href="index.html">← Voltar</a>
+
+<header>
+  <h1>Cadastrar meus itens</h1>
+  <p>Adicione quantos quiser de uma vez 💚</p>
+</header>
+
+<div class="wrap">
+  <div id="area">
+    <div class="bloco vendedor-box">
+      <label>Vendedora</label>
+      <input id="vendedor" required placeholder="Seu nome">
+      <label>Seu WhatsApp</label>
+      <input id="whatsapp" required inputmode="numeric" placeholder="55 + DDD + número">
+      <div class="hint">Já vem preenchido se você acessou pelo seu link. É o contato que aparece nos anúncios.</div>
+    </div>
+
+    <div id="itens"></div>
+
+    <button type="button" class="add-item" id="addItem">+ Adicionar outro item</button>
+    <button type="button" class="enviar" id="btn">Enviar itens</button>
+  </div>
+
+  <div class="msg" id="msg">
+    <div class="ok">💚</div>
+    <h2>Itens enviados!</h2>
+    <p>Recebemos seus itens. Vamos revisar e colocar no ar em breve.</p>
+    <p><a href="index.html">← Voltar para a loja</a></p>
+  </div>
+</div>
+
+<script>
+/* ✏️ COLE AQUI a URL do seu app do Google (Apps Script): */
+const ENDPOINT = "https://script.google.com/macros/s/AKfycby5BZzMv0qg0IwTz26R8dY_bK6vy0HWRvsgExIPKW9wTa9_H011cewy4G8jG06nk5iBYA/exec";
+
+/* vendedor pré-preenchido pelo link: cadastrar-itens.html?v=Maria&z=5573999998888 */
+const params=new URLSearchParams(location.search);
+if(params.get("v")) document.getElementById("vendedor").value=params.get("v");
+if(params.get("z")) document.getElementById("whatsapp").value=params.get("z");
+
+const itens=document.getElementById("itens");
+let n=0;
+
+function novoItem(){
+  n++;
+  const div=document.createElement("div");
+  div.className="bloco item";
+  div.innerHTML=`
+    <div class="item-head"><h3>Item ${n}</h3><button type="button" class="rm-item">remover</button></div>
+    <label>Nome do item</label>
+    <input class="f-nome" placeholder="Ex: Vestido florido longo">
+    <label>Categoria</label>
+    <select class="f-cat">
+      <option value="">Escolha...</option>
+      <option>Feminino</option><option>Masculino</option><option>Infantil</option>
+      <option>Brinquedos</option><option>Casa</option><option>Eletrônicos</option>
+      <option>Livros</option><option>Doação</option>
+    </select>
+    <label>Tamanho <span class="opt">(opcional)</span></label>
+    <input class="f-tam" placeholder="Ex: M, 42, 4 anos">
+    <label>Condição</label>
+    <select class="f-cond">
+      <option value="">Escolha...</option>
+      <option>Novo</option><option>Seminovo</option>
+      <option>Usado - bom estado</option><option>Usado - com marcas de uso</option>
+    </select>
+    <label>Marca <span class="opt">(opcional)</span></label>
+    <input class="f-marca" placeholder="Ex: Farm">
+    <label>Preço (R$)</label>
+    <input class="f-preco" inputmode="numeric" placeholder="Ex: 80  (0 = doação)">
+    <label>Fotos <span class="opt">(até 3, em pé)</span></label>
+    <input type="file" class="f-fotos" accept="image/*" multiple>
+    <div class="fotos-preview"></div>
+    <label>Observações <span class="opt">(opcional)</span></label>
+    <textarea class="f-obs" placeholder="Ex: marquinha na barra; vem com brinde..."></textarea>`;
+  itens.appendChild(div);
+
+  div.querySelector(".rm-item").addEventListener("click",()=>{ div.remove(); renumerar(); });
+  const fileInput=div.querySelector(".f-fotos");
+  const prev=div.querySelector(".fotos-preview");
+  div._fotos=[];
+  fileInput.addEventListener("change",async()=>{
+    const files=Array.from(fileInput.files).slice(0,3);
+    prev.innerHTML=""; div._fotos=[];
+    for(const f of files){ const data=await reduzir(f); div._fotos.push(data);
+      const img=document.createElement("img"); img.src=data; prev.appendChild(img); }
+  });
+}
+function renumerar(){ document.querySelectorAll("#itens .item .item-head h3").forEach((h,i)=>h.textContent="Item "+(i+1)); }
+
+function reduzir(file){
+  return new Promise(res=>{
+    const r=new FileReader();
+    r.onload=()=>{ const img=new Image(); img.onload=()=>{
+      const max=1080; let w=img.width,h=img.height;
+      const sc=Math.min(1,max/Math.max(w,h)); w=Math.round(w*sc); h=Math.round(h*sc);
+      const c=document.createElement("canvas"); c.width=w; c.height=h;
+      c.getContext("2d").drawImage(img,0,0,w,h);
+      res(c.toDataURL("image/jpeg",0.82));
+    }; img.src=r.result; };
+    r.readAsDataURL(file);
+  });
+}
+
+document.getElementById("addItem").addEventListener("click",novoItem);
+novoItem(); // começa com 1 item
+
+document.getElementById("btn").addEventListener("click",async()=>{
+  const vendedor=document.getElementById("vendedor").value.trim();
+  const whatsapp=document.getElementById("whatsapp").value.trim();
+  if(!vendedor||!whatsapp){ alert("Preencha seu nome e WhatsApp."); return; }
+  const blocos=[...document.querySelectorAll("#itens .item")];
+  const lista=[];
+  for(const b of blocos){
+    const nome=b.querySelector(".f-nome").value.trim();
+    const cat=b.querySelector(".f-cat").value;
+    const cond=b.querySelector(".f-cond").value;
+    const preco=b.querySelector(".f-preco").value.trim();
+    if(!nome||!cat||!cond||preco===""){ alert("Preencha nome, categoria, condição e preço de cada item."); return; }
+    lista.push({ nome, categoria:cat, tamanho:b.querySelector(".f-tam").value.trim(),
+      condicao:cond, marca:b.querySelector(".f-marca").value.trim(), preco,
+      obs:b.querySelector(".f-obs").value.trim(), fotos:b._fotos||[] });
+  }
+  if(!lista.length){ alert("Adicione pelo menos um item."); return; }
+
+  const btn=document.getElementById("btn");
+  btn.disabled=true; btn.textContent="Enviando...";
+  try{
+    await fetch(ENDPOINT,{method:"POST",mode:"no-cors",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({tipo:"cadastro",vendedor,whatsapp,itens:lista})});
+    document.getElementById("area").style.display="none";
+    document.getElementById("msg").classList.add("show");
+    window.scrollTo({top:0,behavior:"smooth"});
+  }catch(err){
+    btn.disabled=false; btn.textContent="Enviar itens";
+    alert("Não foi possível enviar agora. Tente de novo em instantes.");
+  }
+});
+</script>
+</body>
+</html>

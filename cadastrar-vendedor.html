@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quero vender — desapegadas</title>
+<style>
+  :root{
+    --bg:#f1f6f5; --card:#ffffff; --ink:#2f4a52; --muted:#6f8a90; --line:#dbe8e6;
+    --brand:#3c7c8c; --brand-dark:#2f6473; --tag:#e3eee9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.5}
+  header{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;
+    padding:30px 20px;text-align:center}
+  header h1{margin:0 0 6px;font-size:1.5rem}
+  header p{margin:0;opacity:.95;font-size:.95rem}
+  .voltar{position:fixed;top:14px;left:16px;z-index:5;color:#fff;text-decoration:none;font-weight:600;
+    font-size:.9rem;background:var(--brand-dark);border:1px solid rgba(255,255,255,.45);
+    padding:8px 15px;border-radius:999px}
+  .wrap{max-width:540px;margin:0 auto;padding:24px 18px 60px}
+  .passos{display:flex;gap:8px;justify-content:center;margin-bottom:18px;font-size:.8rem;color:var(--muted);flex-wrap:wrap}
+  .passos b{color:var(--brand-dark)}
+  .convite-nota{background:var(--tag);border:1px solid var(--line);border-radius:12px;
+    padding:13px 16px;font-size:.9rem;margin-bottom:16px}
+  .convite-nota b{color:var(--brand-dark)}
+  form{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  label{display:block;font-weight:600;font-size:.9rem;margin:14px 0 5px}
+  label .opt{color:var(--muted);font-weight:400;font-size:.82rem}
+  input,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;
+    font-size:1rem;background:#fff;color:var(--ink);font-family:inherit}
+  input:focus,textarea:focus{outline:none;border-color:var(--brand)}
+  textarea{min-height:64px;resize:vertical}
+  .hint{font-size:.8rem;color:var(--muted);margin-top:4px}
+  .aceite{display:flex;gap:8px;align-items:flex-start;margin-top:16px;font-size:.88rem}
+  .aceite input{width:auto;margin-top:3px}
+  button{margin-top:20px;width:100%;background:var(--brand);color:#fff;border:none;border-radius:12px;
+    padding:14px;font-size:1.05rem;font-weight:700;cursor:pointer}
+  button:hover{background:var(--brand-dark)}
+  button:disabled{opacity:.6;cursor:default}
+  .msg{display:none;text-align:center;padding:20px 6px}
+  .msg.show{display:block}
+  .msg .ok{font-size:2.4rem}
+  .msg a{color:var(--brand-dark)}
+</style>
+</head>
+<body>
+
+<a class="voltar" href="index.html">← Voltar</a>
+
+<header>
+  <h1>Cadastro de vendedora</h1>
+  <p>O desapegadas é uma rede por convite 💚</p>
+</header>
+
+<div class="wrap">
+  <div class="passos"><b>1. Cadastro da vendedora</b> → 2. Aprovação → 3. Cadastrar seus itens</div>
+
+  <div class="convite-nota">Por enquanto, vender no desapegadas é <b>só por convite</b> — uma rede de confiança entre vendedoras. Se você foi convidada por alguém da rede, é só preencher abaixo.</div>
+
+  <form id="form">
+    <label>Seu nome</label>
+    <input name="nome" required placeholder="Ex: Maria Silva">
+
+    <label>Quem te convidou?</label>
+    <input name="convidou" required placeholder="Nome da vendedora que te indicou">
+    <div class="hint">O desapegadas funciona como uma rede de confiança: cada vendedora entra pela indicação de outra.</div>
+
+    <label>Seu WhatsApp</label>
+    <input name="whatsapp" required inputmode="numeric" placeholder="Ex: 5573999998888 (55 + DDD + número)">
+    <div class="hint">É o contato que aparece nos seus anúncios e por onde a gente te avisa da aprovação.</div>
+
+    <label>Cidade / Bairro</label>
+    <input name="local" required placeholder="Ex: Serra Grande / Sargi">
+
+    <label>O que você costuma desapegar? <span class="opt">(opcional)</span></label>
+    <textarea name="sobre" placeholder="Ex: roupas femininas, itens infantis, livros..."></textarea>
+
+    <label class="aceite">
+      <input type="checkbox" id="aceite" required>
+      <span>Li e concordo com as <a href="regras.html" target="_blank">regras do desapegadas</a> (honestidade sobre o estado, fotos reais, itens próprios).</span>
+    </label>
+
+    <button type="submit" id="btn">Enviar cadastro</button>
+  </form>
+
+  <div class="msg" id="msg">
+    <div class="ok">💚</div>
+    <h2>Cadastro enviado!</h2>
+    <p>Vamos revisar seu cadastro. Assim que aprovado, você recebe no WhatsApp o link para <b>cadastrar seus itens</b>.</p>
+    <p><a href="index.html">← Voltar para a loja</a></p>
+  </div>
+</div>
+
+<script>
+/* ✏️ COLE AQUI a URL do seu app do Google (Apps Script): */
+const ENDPOINT = "https://script.google.com/macros/s/AKfycby5BZzMv0qg0IwTz26R8dY_bK6vy0HWRvsgExIPKW9wTa9_H011cewy4G8jG06nk5iBYA/exec";
+
+document.getElementById("form").addEventListener("submit",async(e)=>{
+  e.preventDefault();
+  const btn=document.getElementById("btn");
+  btn.disabled=true; btn.textContent="Enviando...";
+  const f=e.target;
+  const payload={tipo:"vendedor",nome:f.nome.value,convidou:f.convidou.value,whatsapp:f.whatsapp.value,local:f.local.value,sobre:f.sobre.value};
+  try{
+    await fetch(ENDPOINT,{method:"POST",mode:"no-cors",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
+    f.style.display="none";
+    document.getElementById("msg").classList.add("show");
+    window.scrollTo({top:0,behavior:"smooth"});
+  }catch(err){
+    btn.disabled=false; btn.textContent="Enviar cadastro";
+    alert("Não foi possível enviar agora. Tente de novo em instantes.");
+  }
+});
+</script>
+</body>
+</html>
